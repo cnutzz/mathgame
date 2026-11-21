@@ -286,6 +286,30 @@
   .lvname { font-size: 22px; }
   .lvdesc { font-size: 16px; color: var(--muted); }
 
+  /* ---------- 5단계: 타임어택 ---------- */
+  body.lv5 #stage { display: none; }
+  body.lv5 .num { font-size: clamp(56px, 11vw, 84px); }
+  body.lv5 .op { font-size: clamp(48px, 9vw, 72px); }
+  body.lv5 .eq { min-height: calc(clamp(56px, 11vw, 84px) + 40px); align-items: center; }
+  .tabar { display: none; align-items: center; gap: 10px; background: var(--card); border-radius: 999px; padding: 8px 14px; box-shadow: 0 4px 0 var(--card-shadow); }
+  body.lv5 .tabar { display: flex; }
+  .ta-track { flex: 1; height: 16px; background: #f3e7d8; border-radius: 999px; overflow: hidden; }
+  .ta-fill { height: 100%; width: 100%; background: var(--ok); border-radius: 999px; }
+  .tabar.hurry .ta-fill { background: #e5484d; }
+  .tabar.hurry .ta-time { color: #e5484d; animation: popin .5s infinite; }
+  .ta-time { font-size: 22px; min-width: 3.2em; text-align: right; }
+  .ta-score { font-size: 22px; min-width: 3em; }
+  .ta-q { color: var(--muted); }
+  .ta-big { font-size: clamp(56px, 12vw, 96px); line-height: 1; }
+  .ta-count { font-size: clamp(80px, 18vw, 140px); line-height: 1; color: var(--accent); animation: popin .4s; }
+  .ta-result { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .ta-result .score { font-size: 1.6em; color: var(--ok); }
+  .ta-result .rec { color: var(--accent-dark); }
+  .ta-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 4px; }
+  .ta-chips span { background: #fff1e4; border-radius: 999px; padding: 2px 12px; font-size: .8em; }
+  .ta-chips.miss span { background: #ffe1e1; }
+  .ta-label { font-size: .75em; color: var(--muted); margin-top: 6px; }
+
   @media (max-width: 680px) {
     /* 휴대폰: 한 화면(100dvh)에 스크롤 없이 들어가도록 화면 높이에 맞춰 줄인다 */
     :root {
@@ -353,6 +377,13 @@
     body.lv3 main, body.lv4 main { justify-content: center; }
     .dots { grid-template-columns: repeat(5, 20px); gap: 4px; }
     .dot { width: 20px; height: 20px; }
+    body.lv5 { --num: min(16vw, 8dvh, 72px); }
+    body.lv5 .num { font-size: var(--num); }
+    body.lv5 .op { font-size: calc(var(--num) * .85); }
+    body.lv5 .eq { min-height: calc(var(--num) + 30px); }
+    body.lv5 main { justify-content: center; }
+    .tabar { padding: 6px 12px; gap: 8px; }
+    .ta-time, .ta-score { font-size: 18px; }
     .toast { font-size: 16px; bottom: 14px; }
   }
 </style>
@@ -368,6 +399,11 @@
 </header>
 
 <main>
+  <div class="tabar" id="taBar">
+    <div class="ta-track"><div class="ta-fill" id="taFill"></div></div>
+    <span class="ta-time" id="taTime">60초</span>
+    <span class="ta-score" id="taScore">✅ 0</span>
+  </div>
   <div class="eq" id="equation"></div>
 
   <div id="stage">
@@ -508,10 +544,14 @@
     { icon: '🎁', name: '뚜껑 닫힌 도시락', desc: '숫자만 보고 머릿속으로! 막히면 👀 살짝 보기' },
     { icon: '🔢', name: '숫자 도시락', desc: '그림 없이 가르기로 풀어요' },
     { icon: '⚡', name: '한 번에!', desc: '식만 보고 바로 답해요' },
+    { icon: '⏱️', name: '1분 타임어택', desc: '1분 동안 몇 개나 맞힐 수 있을까?' },
   ];
-  const ACCESSORY = ['', '', '🎀', '⭐', '👑'];
+  const ACCESSORY = ['', '', '🎀', '⭐', '👑', '⏱️'];
   let level = load('fruitbox-level', 1);
-  if (![1, 2, 3, 4].includes(level)) level = 1;
+  if (![1, 2, 3, 4, 5].includes(level)) level = 1;
+  const TA_SECONDS = 60;
+  const TA = { running: false, counting: false, score: 0, end: 0, raf: 0, lastSec: 0, missed: [],
+               data: load('fruitbox-ta', { best: 0, history: [] }) };
   let streak = 0;
   const jo = (n, withB, noB) => NUM_BAT[n % 10] ? withB : noB; // 숫자 뒤 조사
 
@@ -549,6 +589,12 @@
       piles.a.classList.add('selectable'); piles.b.classList.add('selectable');
       say(`${F('a')} <b>${a}</b>개, ${F('b')} <b>${b}</b>개가 있어요.<br>어떤 과일을 먼저 도시락에 넣을까요?` +
           `<span class="hint">👆 과일을 눌러 골라봐!</span>`);
+    } else if (level === 5) {
+      if (!TA.running) return showTaStart();
+      chooseFirst(a >= b ? 'a' : 'b');
+      S.step = 'ta';
+      qEl.innerHTML = `<span class="ta-q">빨리 골라! ⚡</span>`;
+      renderChoices(10, 18);
     } else if (level === 3) {
       say(`<b>${a} + ${b}</b><br>어느 수를 <b>10</b>으로 만들까요?`);
       renderPickChoices();
@@ -584,7 +630,7 @@
   }
 
   function renderEq() {
-    const showBond = S.first && !['pick', 'filling', 'direct'].includes(S.step);
+    const showBond = S.first && !['pick', 'filling', 'direct', 'ta'].includes(S.step);
     const small = S.first ? other(S.first) : null;
     const term = k => {
       const f = fruitOf(k);
@@ -790,6 +836,22 @@
     if (S.busy) return;
     const k = S.first, o = k && other(k);
 
+    if (S.step === 'ta') {
+      if (!TA.running) return;
+      if (n !== S.a + S.b) {
+        wrongMark(btn);
+        if (!TA.missed.some(m => m.a === S.a && m.b === S.b)) TA.missed.push({ a: S.a, b: S.b, k: S.first });
+        return;
+      }
+      S.busy = true; btn.classList.add('right');
+      tone(880, .08, 'sine', .18); tone(1320, .1, 'sine', .14, .06);
+      TA.score++; paintTaBar();
+      S.solved = true; renderEq();
+      await wait(260);
+      if (TA.running) newProblem();
+      return;
+    }
+
     if (S.step === 'direct') {
       if (n !== S.a + S.b) {
         wrongMark(btn);
@@ -871,6 +933,95 @@
       right(btn);
       return finish();
     }
+  }
+
+  // ----- 5단계: 1분 타임어택 -----
+  function paintTaBar(remainMs = TA_SECONDS * 1000) {
+    const sec = Math.max(0, Math.ceil(remainMs / 1000));
+    $('#taFill').style.width = Math.max(0, remainMs / (TA_SECONDS * 10)) + '%';
+    $('#taTime').textContent = sec + '초';
+    $('#taScore').textContent = '✅ ' + TA.score;
+    $('#taBar').classList.toggle('hurry', TA.running && sec <= 10);
+  }
+  function showTaStart() {
+    S.step = 'ta-start';
+    TA.score = 0; paintTaBar();
+    eqEl.innerHTML = `<div class="ta-big">⏱️</div>`;
+    const best = TA.data.best;
+    say(`<b>1분</b> 동안 몇 개나 맞힐 수 있을까?<br>${best ? `🏆 최고 기록: <b>${best}개</b>` : '첫 도전을 해 봐요!'}`);
+    chEl.innerHTML = '';
+    const go = document.createElement('button');
+    go.className = 'next'; go.textContent = '도전 시작 ▶';
+    go.addEventListener('click', () => { actx(); startTa(); });
+    chEl.appendChild(go);
+  }
+  async function startTa() {
+    if (TA.counting || TA.running) return;
+    TA.counting = true;
+    chEl.innerHTML = ''; qEl.innerHTML = '<span class="ta-q">준비…</span>';
+    if ('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch (e) {}
+    for (const c of [3, 2, 1]) {
+      eqEl.innerHTML = `<div class="ta-count">${c}</div>`;
+      tone(660, .12, 'sine', .2);
+      await wait(800);
+    }
+    if (level !== 5) { TA.counting = false; return; }
+    tone(1046, .25, 'triangle', .22);
+    TA.counting = false; TA.running = true;
+    TA.score = 0; TA.missed = []; TA.lastSec = TA_SECONDS;
+    TA.end = performance.now() + TA_SECONDS * 1000;
+    paintTaBar();
+    newProblem();
+    const loop = () => {
+      if (!TA.running) return;
+      const remain = TA.end - performance.now();
+      paintTaBar(remain);
+      const sec = Math.ceil(remain / 1000);
+      if (sec < TA.lastSec) { TA.lastSec = sec; if (sec <= 5 && sec > 0) tone(520, .06, 'square', .08); }
+      if (remain <= 0) return endTa();
+      TA.raf = requestAnimationFrame(loop);
+    };
+    TA.raf = requestAnimationFrame(loop);
+  }
+  function endTa() {
+    TA.running = false; cancelAnimationFrame(TA.raf);
+    S.busy = true; S.step = 'ta-done';
+    paintTaBar(0);
+    const score = TA.score, prevBest = TA.data.best;
+    const isRecord = score > prevBest;
+    const prev = TA.data.history.slice(-4).map(h => h.score);
+    TA.data.best = Math.max(prevBest, score);
+    TA.data.history.push({ score, t: Date.now() });
+    TA.data.history = TA.data.history.slice(-30);
+    save('fruitbox-ta', TA.data);
+
+    sfx.wake();
+    eqEl.innerHTML = `<div class="ta-big">${isRecord ? '🏆' : '⏰'} ${score}개</div>`;
+    sparkle(eqEl, isRecord ? 34 : 16);
+    if (score > 0) {
+      const name = pickOne(NAMES);
+      friends.push({ name, color: pickOne(BOX_COLORS), fa: isRecord ? '🏆' : '', fb: '', a: 0, b: 0, lv: 5, ta: score, t: Date.now() });
+      save('fruitbox-friends', friends); updateFriendCount();
+      setTimeout(() => toast(`🍱 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`), 1200);
+    }
+    const MISS_SHOW = 4;
+    const miss = TA.missed.slice(0, MISS_SHOW).map(m => {
+      const big = m.k === 'a' ? m.a : m.b, small = m.k === 'a' ? m.b : m.a, need = 10 - big;
+      return `<span>${m.a} + ${m.b} = ${m.a + m.b} <small>(${big}+${need}=10, 10+${small - need})</small></span>`;
+    }).join('') + (TA.missed.length > MISS_SHOW ? `<span>+${TA.missed.length - MISS_SHOW}개 더</span>` : '');
+    qEl.innerHTML = (`<div class="ta-result">
+        <div>⏰ 시간 끝!</div>
+        <div class="score">${score}개 맞혔어요!</div>
+        <div class="rec">${isRecord ? (prevBest ? `🏆 새 기록! (전에는 ${prevBest}개)` : '🏆 첫 기록이에요!') : `🏆 최고 기록: ${TA.data.best}개`}</div>
+        ${prev.length ? `<div class="ta-label">지난 기록</div><div class="ta-chips">${prev.map(v => `<span>${v}개</span>`).join('')}</div>` : ''}
+        ${miss ? `<div class="ta-label">헷갈렸던 문제</div><div class="ta-chips miss">${miss}</div>` : ''}
+      </div>`);
+    speak(`시간 끝! ${score}개 맞혔어요! ${isRecord ? '새 기록이에요!' : ''}`);
+    chEl.innerHTML = '';
+    const again = document.createElement('button');
+    again.className = 'next'; again.textContent = '다시 도전 ▶';
+    again.addEventListener('click', () => { actx(); S.busy = false; startTa(); });
+    chEl.appendChild(again);
   }
 
   // ----- 힌트 -----
@@ -997,7 +1148,7 @@
         <div class="fr">${f.fa}${f.fb}${ACCESSORY[f.lv || 1]}</div>
         <div class="face"><div class="eye l"></div><div class="eye r"></div><div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
         <div class="nm">${f.name}</div>
-        <div class="q">${f.a} + ${f.b} = ${f.a + f.b}</div>
+        <div class="q">${f.ta != null ? `1분에 ${f.ta}개` : `${f.a} + ${f.b} = ${f.a + f.b}`}</div>
       </div>`).join('');
   }
   let toastTimer;
@@ -1037,7 +1188,7 @@
   }
   // 단계 고르기
   function renderLevels() {
-    $('#levelList').innerHTML = [1, 2, 3, 4].map(n => `
+    $('#levelList').innerHTML = [1, 2, 3, 4, 5].map(n => `
       <button class="levelcard ${n === level ? 'current' : ''}" data-lv="${n}">
         <span class="lvicon">${LEVELS[n].icon}</span>
         <span class="lvtext"><span class="lvname">${n}단계 · ${LEVELS[n].name}</span><span class="lvdesc">${LEVELS[n].desc}</span></span>
@@ -1049,6 +1200,7 @@
     }));
   }
   $('#levelBtn').addEventListener('click', () => {
+    if (TA.running || TA.counting) { toast('도전 중에는 단계를 바꿀 수 없어요!'); return; }
     if (S.busy) { toast('잠깐만! 과일을 넣는 중이에요'); return; }
     renderLevels(); $('#levelModal').classList.remove('hidden');
   });
