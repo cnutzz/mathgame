@@ -19,6 +19,9 @@
     --accent-dark: #d96a1f;
     --ok: #2fb36d;
     --box: #ffd6e0;
+    --choice: #ffe8cc;
+    --choice-sh: #f3c48f;
+    --boxicon: '🍱';
     --slot: max(34px, min(7.6vw, 6.4vh, 66px));
     --fruit: max(24px, min(5vw, 4.4vh, 44px));
   }
@@ -80,7 +83,7 @@
   .part.filled { border-style: solid; color: var(--ink); animation: popin .35s; }
   .part.tobox { border-color: var(--ok); background: #e7f8ee; }
   .part.tobox::after {
-    content: '🍱'; position: absolute; bottom: -22px; font-size: 16px;
+    content: var(--boxicon); position: absolute; bottom: -22px; font-size: 16px;
   }
 
   /* ---------- 무대 ---------- */
@@ -167,10 +170,10 @@
   .choice {
     font-size: clamp(26px, 5vw, 36px);
     width: clamp(54px, 9.5vw, 74px); height: clamp(54px, 9.5vw, 74px);
-    border: 0; border-radius: 18px; background: #ffe8cc; box-shadow: 0 5px 0 #f3c48f;
+    border: 0; border-radius: 18px; background: var(--choice); box-shadow: 0 5px 0 var(--choice-sh);
     transition: transform .08s;
   }
-  .choice:active { transform: translateY(3px); box-shadow: 0 2px 0 #f3c48f; }
+  .choice:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--choice-sh); }
   .choice.wrong { background: #f1ece6; color: #c9bcae; box-shadow: 0 5px 0 #e2d8cc; pointer-events: none; }
   .choice.right { background: #c9f2d9; box-shadow: 0 5px 0 #8fd6ac; }
   .next {
@@ -286,6 +289,50 @@
   .lvname { font-size: 22px; }
   .lvdesc { font-size: 16px; color: var(--muted); }
 
+  /* ---------- 스킨: 리본 간식 상자 ---------- */
+  body[data-skin="ribbon"] {
+    --bg: #fff3f8; --ink: #4a3343; --muted: #b48aa6; --card-shadow: #f6d3e4;
+    --accent: #ff7eb6; --accent-dark: #e2558f; --ok: #3cb98a;
+    --choice: #ffe2ef; --choice-sh: #f4b3cf; --boxicon: '💝';
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle, #ffd9ea 2.5px, transparent 3px),
+      radial-gradient(circle, #e9dcff 2.5px, transparent 3px);
+    background-size: 38px 38px, 38px 38px;
+    background-position: 0 0, 19px 19px;
+  }
+  body[data-skin="ribbon"] .box { border: 3px solid rgba(255,255,255,.9); }
+  body[data-skin="ribbon"] .box::before {
+    content: '🎀'; position: absolute; top: -26px; left: 50%; transform: translateX(-50%) rotate(-6deg);
+    font-size: calc(var(--slot) * .8); z-index: 2; filter: drop-shadow(0 2px 0 rgba(0,0,0,.08));
+  }
+  body[data-skin="ribbon"] .slotwrap { z-index: 1; }
+  body[data-skin="ribbon"] .slot { border-radius: 50%; }
+  body[data-skin="ribbon"] .eye { width: calc(var(--slot) * .16); height: calc(var(--slot) * .22); }
+  body[data-skin="ribbon"] .cheek { background: #ff9cc5; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+  body[data-skin="ribbon"] .mouth { width: calc(var(--slot) * .2); height: calc(var(--slot) * .12); border-width: 3px; top: 50%; }
+  body[data-skin="ribbon"] .face::after {
+    content: '✨'; position: absolute; right: 8%; top: 4%; font-size: calc(var(--slot) * .32); opacity: .9;
+  }
+  body[data-skin="ribbon"] .zzz { color: #c79bbd; }
+  body[data-skin="ribbon"] .lid {
+    background-color: #ffb8d6;
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(50% - 7px), #ff7eb6 calc(50% - 7px) calc(50% + 7px), transparent calc(50% + 7px) 100%),
+                      radial-gradient(circle, rgba(255,255,255,.7) 3px, transparent 3.5px);
+    background-size: 100% 100%, 22px 22px;
+  }
+  body[data-skin="ribbon"] .lid span { display: none; }
+  body[data-skin="ribbon"] .levelcard.current, body[data-skin="ribbon"] .skincard.current { border-color: var(--accent); }
+  .sheet-sub { font-size: 20px; color: var(--muted); margin: 16px 0 8px; }
+  #skinList { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .skincard {
+    display: flex; flex-direction: column; align-items: center; gap: 2px; border: 3px solid transparent;
+    border-radius: 20px; background: var(--card); padding: 10px; box-shadow: 0 4px 0 var(--card-shadow);
+  }
+  .skincard.current { border-color: var(--accent); }
+  .skincard .sk-icons { font-size: 26px; letter-spacing: 2px; }
+  .skincard .sk-name { font-size: 19px; }
+
   /* ---------- 5단계: 타임어택 ---------- */
   body.lv5 #stage { display: none; }
   body.lv5 .num { font-size: clamp(56px, 11vw, 84px); }
@@ -359,7 +406,7 @@
     #panel { padding: 10px 10px 12px; border-radius: 18px; }
     #question { font-size: min(18px, 2.5dvh); min-height: 2.9em; line-height: 1.4; }
     #choices { gap: 7px; margin-top: 8px; }
-    .choice { width: var(--btn); height: var(--btn); font-size: calc(var(--btn) * .5); border-radius: 14px; box-shadow: 0 4px 0 #f3c48f; }
+    .choice { width: var(--btn); height: var(--btn); font-size: calc(var(--btn) * .5); border-radius: 14px; box-shadow: 0 4px 0 var(--choice-sh); }
     .next { font-size: 22px; padding: 10px 28px; }
     .summary { font-size: .95em; gap: 2px; margin-top: 0; }
     .title .long { display: none; }
@@ -390,10 +437,10 @@
 </head>
 <body>
 <header>
-  <div class="title">🍱 과일 도시락<span class="long"> 친구들</span></div>
+  <div class="title" id="title">🍱 과일 도시락<span class="long"> 친구들</span></div>
   <div class="hud">
     <button id="levelBtn" aria-label="단계 고르기">🍱 1단계</button>
-    <button id="friendsBtn" aria-label="도시락 친구 모음">🍱 <span id="friendCount">0</span></button>
+    <button id="friendsBtn" aria-label="친구 모음"><span id="friendIcon">🍱</span> <span id="friendCount">0</span></button>
     <button id="soundBtn" aria-label="소리 켜기/끄기">🔊</button>
   </div>
 </header>
@@ -435,15 +482,17 @@
 
 <div class="modal hidden" id="friendsModal">
   <div class="sheet">
-    <div class="sheet-head"><span>내 도시락 친구들</span><button id="closeFriends" aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><span id="friendsTitle">내 도시락 친구들</span><button id="closeFriends" aria-label="닫기">✕</button></div>
     <div id="friendsGrid"></div>
     <div class="reset-row" id="resetRow"></div>
   </div>
 </div>
 <div class="modal hidden" id="levelModal">
   <div class="sheet">
-    <div class="sheet-head"><span>단계 고르기</span><button id="closeLevel" aria-label="닫기">✕</button></div>
+    <div class="sheet-head"><span>단계와 스킨 고르기</span><button id="closeLevel" aria-label="닫기">✕</button></div>
     <div id="levelList"></div>
+    <div class="sheet-sub">🎨 스킨</div>
+    <div id="skinList"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -464,6 +513,34 @@
   ];
   const BOX_COLORS = ['#ffd6e0', '#d6ecff', '#dff5d0', '#fff0b8', '#eadcff', '#ffe0c7', '#c9f1ec'];
   const NAMES = ['새콤이', '달콤이', '말랑이', '통통이', '뽀송이', '몽글이', '반짝이', '꼬물이', '방울이', '콩콩이', '쫀득이', '포근이', '깡총이', '도담이', '보들이'];
+
+  const SKINS = {
+    fruit: {
+      name: '과일 도시락', title: '과일 도시락', long: ' 친구들', icon: '🍱', box: '도시락', item: '과일',
+      items: FRUITS, colors: BOX_COLORS, names: NAMES,
+    },
+    ribbon: {
+      name: '리본 간식 상자', title: '리본 간식 상자', long: '', icon: '💝', box: '상자', item: '간식',
+      items: [
+        { e: '🧁', n: '컵케이크', c: '#d9468f' },
+        { e: '🍓', n: '딸기',     c: '#e5484d' },
+        { e: '🍬', n: '사탕',     c: '#8e4ec6' },
+        { e: '🍭', n: '막대사탕', c: '#e93d82' },
+        { e: '🍩', n: '도넛',     c: '#c2683a' },
+        { e: '🍪', n: '쿠키',     c: '#a0662f' },
+        { e: '🍰', n: '케이크',   c: '#d6409f' },
+        { e: '🍮', n: '푸딩',     c: '#c58a00' },
+        { e: '🍡', n: '경단',     c: '#3d9a6b' },
+        { e: '🍒', n: '체리',     c: '#c4224a' },
+      ],
+      colors: ['#ffd1e6', '#e6dcff', '#d4f3ea', '#fff1c9', '#ffe0ec', '#dcefff', '#f6d9ff'],
+      names: ['리리', '모모', '코코', '루루', '미미', '쪼꼬', '젤리', '하니', '나나', '별사탕', '솜사탕', '봄이', '마루', '초롱이', '보미'],
+    },
+  };
+  let skinId = 'fruit';
+  try { const v = JSON.parse(localStorage.getItem('fruitbox-skin')); if (v && v in SKINS) skinId = v; } catch (e) {}
+  let SKIN = SKINS[skinId];
+  const B = () => SKIN.box, IT = () => SKIN.item, BI = () => SKIN.icon;
 
   const $ = s => document.querySelector(s);
   const qEl = $('#question'), chEl = $('#choices'), eqEl = $('#equation');
@@ -538,14 +615,15 @@
   }
 
   // ----- 단계(레벨) -----
-  const LEVELS = [
+  const LEVELS = () => [
     null,
-    { icon: '🍱', name: '열린 도시락', desc: '과일과 빈자리가 다 보여요' },
-    { icon: '🎁', name: '뚜껑 닫힌 도시락', desc: '숫자만 보고 머릿속으로! 막히면 👀 살짝 보기' },
-    { icon: '🔢', name: '숫자 도시락', desc: '그림 없이 가르기로 풀어요' },
+    { icon: BI(), name: `열린 ${B()}`, desc: `${IT()}${hasBatchim(IT()) ? '과' : '와'} 빈자리가 다 보여요` },
+    { icon: '🎁', name: `뚜껑 닫힌 ${B()}`, desc: '숫자만 보고 머릿속으로! 막히면 👀 살짝 보기' },
+    { icon: '🔢', name: `숫자 ${B()}`, desc: '그림 없이 가르기로 풀어요' },
     { icon: '⚡', name: '한 번에!', desc: '식만 보고 바로 답해요' },
     { icon: '⏱️', name: '1분 타임어택', desc: '1분 동안 몇 개나 맞힐 수 있을까?' },
   ];
+
   const ACCESSORY = ['', '', '🎀', '⭐', '👑', '⏱️'];
   let level = load('fruitbox-level', 1);
   if (![1, 2, 3, 4, 5].includes(level)) level = 1;
@@ -571,24 +649,24 @@
     } while (a + b < 11 || recent.includes(key));
     recent.push(key); if (recent.length > 6) recent.shift();
 
-    const fa = pickOne(FRUITS);
-    let fb; do { fb = pickOne(FRUITS); } while (fb === fa);
-    let color; do { color = pickOne(BOX_COLORS); } while (color === S.color && BOX_COLORS.length > 1);
+    const fa = pickOne(SKIN.items);
+    let fb; do { fb = pickOne(SKIN.items); } while (fb === fa);
+    let color; do { color = pickOne(SKIN.colors); } while (color === S.color);
 
     S = { id: ++problemId, a, b, fa, fb, color, level, step: 'pick', first: null, need: 0, left: 0,
           needDone: false, leftDone: false, solved: false, wrong: 0, wrongTotal: 0,
           busy: false, peeks: 0, lidOpen: false, guided: false };
 
     document.body.className = 'lv' + level;
-    $('#levelBtn').textContent = `${LEVELS[level].icon} ${level}단계`;
+    $('#levelBtn').textContent = `${LEVELS()[level].icon} ${level}단계`;
     chEl.innerHTML = ''; hidePeek(); clearCounts();
     renderEq();
 
     if (pic()) {
       renderPile('a'); renderPile('b'); renderBox();
       piles.a.classList.add('selectable'); piles.b.classList.add('selectable');
-      say(`${F('a')} <b>${a}</b>개, ${F('b')} <b>${b}</b>개가 있어요.<br>어떤 과일을 먼저 도시락에 넣을까요?` +
-          `<span class="hint">👆 과일을 눌러 골라봐!</span>`);
+      say(`${F('a')} <b>${a}</b>개, ${F('b')} <b>${b}</b>개가 있어요.<br>어떤 ${eul(IT())} 먼저 ${B()}에 넣을까요?` +
+          `<span class="hint">👆 ${eul(IT())} 눌러 골라봐!</span>`);
     } else if (level === 5) {
       if (!TA.running) return showTaStart();
       chooseFirst(a >= b ? 'a' : 'b');
@@ -789,7 +867,7 @@
             `<span class="hint">더 <b>큰</b> 수를 10으로 만들면 조금만 더하면 돼서 쉬워! 다시 골라볼까?</span>`);
       } else {
         say(`음~ ${eun(F(k))} ${S[k]}개, ${eun(F(o))} ${S[o]}개야.` +
-            `<span class="hint">더 <b>많은</b> 과일을 먼저 넣으면 빈자리가 조금만 남아서 쉬워! 다시 골라볼까?</span>`);
+            `<span class="hint">더 <b>많은</b> ${eul(IT())} 먼저 넣으면 빈자리가 조금만 남아서 쉬워! 다시 골라볼까?</span>`);
       }
       return;
     }
@@ -801,11 +879,11 @@
     piles[k].classList.add('chosen');
     sfx.ok();
     if (S.level === 1) {
-      say(`좋아! ${F(k)} ${S[k]}개를 도시락에 쏙쏙!`);
+      say(`좋아! ${F(k)} ${S[k]}개를 ${B()}에 쏙쏙!`);
       await wait(500);
       await fill(k, S[k]);
     } else {
-      say(`좋아! ${F(k)} ${S[k]}개를 도시락에 넣고 뚜껑을 닫았어요.`);
+      say(`좋아! ${F(k)} ${S[k]}개를 ${B()}에 넣고 뚜껑을 닫았어요.`);
       await wait(400);
       await fillInstant(k, S[k]);
     }
@@ -816,9 +894,9 @@
     renderEq();
     if (S.level === 1) {
       boxEl.classList.add('wantfill');
-      say(`도시락에는 자리가 <b>10개</b>! 꽉 채워야 잠에서 깨어나요.<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
+      say(`${B()}에는 자리가 <b>10개</b>! 꽉 채워야 잠에서 깨어나요.<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
     } else {
-      say(`도시락에 ${F(k)} <b>${S[k]}개</b>가 들어갔어요. 자리는 <b>10개</b>!<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
+      say(`${B()}에 ${F(k)} <b>${S[k]}개</b>가 들어갔어요. 자리는 <b>10개</b>!<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
       showPeek();
     }
     renderChoices(1, 9);
@@ -898,11 +976,11 @@
       await wait(250);
       boxEl.classList.remove('sleeping'); boxEl.classList.add('awake');
       sfx.wake(); sparkle(boxEl, 22);
-      say(`도시락이 꽉 찼다! 도시락 친구가 깨어났어요! 🎉`);
+      say(`${iga(B())} 꽉 찼다! ${B()} 친구가 깨어났어요! 🎉`);
       await wait(2300);
 
       S.step = 'left'; S.wrong = 0; S.busy = false;
-      say(`${F(o)} ${S[o]}개 중에서 ${S.need}개를 도시락에 넣었어요.<br>${eun(F(o))} 몇 개 남았을까?`);
+      say(`${F(o)} ${S[o]}개 중에서 ${S.need}개를 ${B()}에 넣었어요.<br>${eun(F(o))} 몇 개 남았을까?`);
       renderChoices(0, 9);
       showPeek();
       return;
@@ -922,7 +1000,7 @@
       await wait(1600);
 
       S.step = 'total'; S.wrong = 0; S.busy = false;
-      if (pic()) say(`꽉 찬 도시락 <b>10개</b>와 남은 ${F(o)} <b>${S.left}개</b>.<br>과일은 모두 몇 개일까?`);
+      if (pic()) say(`꽉 찬 ${B()} <b>10개</b>와 남은 ${F(o)} <b>${S.left}개</b>.<br>${eun(IT())} 모두 몇 개일까?`);
       else say(`<b>10 + ${S.left}</b>${jo(S.left, '은', '는')} 얼마일까?`);
       renderChoices(10, 18);
       return;
@@ -999,10 +1077,10 @@
     eqEl.innerHTML = `<div class="ta-big">${isRecord ? '🏆' : '⏰'} ${score}개</div>`;
     sparkle(eqEl, isRecord ? 34 : 16);
     if (score > 0) {
-      const name = pickOne(NAMES);
-      friends.push({ name, color: pickOne(BOX_COLORS), fa: isRecord ? '🏆' : '', fb: '', a: 0, b: 0, lv: 5, ta: score, t: Date.now() });
+      const name = pickOne(SKIN.names);
+      friends.push({ name, color: pickOne(SKIN.colors), fa: isRecord ? '🏆' : '', fb: '', a: 0, b: 0, lv: 5, ta: score, t: Date.now() });
       save('fruitbox-friends', friends); updateFriendCount();
-      setTimeout(() => toast(`🍱 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`), 1200);
+      setTimeout(() => toast(`${BI()} 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`), 1200);
     }
     const MISS_SHOW = 4;
     const miss = TA.missed.slice(0, MISS_SHOW).map(m => {
@@ -1030,7 +1108,7 @@
     const k = S.first;
     const empties = () => slotsEl.querySelectorAll('.slot:not(.filled)');
     if (S.level === 1) {
-      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락의 빈자리를 세어봐! 👀</span>`);
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${B()}의 빈자리를 세어봐! 👀</span>`);
       else { say(`빈자리를 같이 세어보자!`); countOn(empties(), 1); }
     } else if (S.level === 2) {
       if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[k]}에서 10이 되려면 얼마나 더 필요할까? 막히면 👀 살짝 보기!</span>`);
@@ -1053,9 +1131,9 @@
       if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[o]}개에서 ${S.need}개를 넣었으니… 막히면 👀 살짝 보기!</span>`);
       else { say(`남은 ${fruitOf(o).n}, 같이 세어보자!`); hidePeek(); piles[o].classList.remove('numcard'); countOn(rest(), 1); }
     } else {
-      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[o]}에서 ${S.need}만큼 도시락에 넣었으면 몇이 남을까?</span>`);
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[o]}에서 ${S.need}만큼 ${B()}에 넣었으면 몇이 남을까?</span>`);
       else {
-        say(`점으로 세어보자! 🍱에 들어간 ${S.need}개 말고 남은 점은?<span class="hint"><span class="dots">${dots(S.need, '#2fb36d', 'used')}${dots(S.left, oc(), 'rest')}</span></span>`);
+        say(`점으로 세어보자! ${BI()}에 들어간 ${S.need}개 말고 남은 점은?<span class="hint"><span class="dots">${dots(S.need, '#2fb36d', 'used')}${dots(S.left, oc(), 'rest')}</span></span>`);
         countOn(qEl.querySelectorAll('.dot.rest'), 1);
       }
     }
@@ -1064,10 +1142,10 @@
     const o = other(S.first);
     const rest = () => piles[o].querySelectorAll('.fruit:not(.gone)');
     if (S.level === 1) {
-      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락에 10개! 거기서부터 남은 ${fruitOf(o).n}만큼 더 세어봐.</span>`);
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${B()}에 10개! 거기서부터 남은 ${fruitOf(o).n}만큼 더 세어봐.</span>`);
       else { say(`10부터 같이 세어보자! 열…`); countOn(rest(), 11); }
     } else if (S.level === 2) {
-      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락에 10개! 거기서부터 ${S.left}만큼 더 세어봐. 막히면 👀 살짝 보기!</span>`);
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${B()}에 10개! 거기서부터 ${S.left}만큼 더 세어봐. 막히면 👀 살짝 보기!</span>`);
       else { say(`10부터 같이 세어보자! 열…`); hidePeek(); piles[o].classList.remove('numcard'); countOn(rest(), 11); }
     } else {
       if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">10에서부터 ${S.left}만큼 더 세어봐!</span>`);
@@ -1089,8 +1167,8 @@
     const f = fruitOf(k), g = fruitOf(o);
     const lines = pic() ? [
       `${g.e} ${S[o]}${jo(S[o], '을', '를')} <b>${S.need}</b>${jo(S.need, '과', '와')} <b>${S.left}</b>${roJ(S.left)} 나눠요`,
-      `${f.e} ${S[k]} + ${g.e} ${S.need} = 🍱 10`,
-      `🍱 10 + ${g.e} ${S.left} = <b>${ans}</b>`,
+      `${f.e} ${S[k]} + ${g.e} ${S.need} = ${BI()} 10`,
+      `${BI()} 10 + ${g.e} ${S.left} = <b>${ans}</b>`,
     ] : [
       `${S[o]}${jo(S[o], '을', '를')} <b>${S.need}</b>${jo(S.need, '과', '와')} <b>${S.left}</b>${roJ(S.left)} 갈라요`,
       `${S[k]} + ${S.need} = 10`,
@@ -1117,7 +1195,7 @@
     speak(`정답! ${S.a} 더하기 ${S.b}${jo(S.b, '은', '는')} ${ans}!`);
     chEl.innerHTML = '';
     const nx = document.createElement('button');
-    nx.className = 'next'; nx.textContent = '다음 도시락 ▶';
+    nx.className = 'next'; nx.textContent = `다음 ${B()} ▶`;
     nx.addEventListener('click', () => { actx(); newProblem(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
     chEl.appendChild(nx);
     S.busy = false;
@@ -1132,17 +1210,17 @@
 
   // ----- 친구 모음 -----
   function addFriend() {
-    const name = pickOne(NAMES);
+    const name = pickOne(SKIN.names);
     friends.push({ name, color: S.color, fa: S.fa.e, fb: S.fb.e, a: S.a, b: S.b, lv: S.level, t: Date.now() });
     save('fruitbox-friends', friends);
     updateFriendCount();
-    toast(`🍱 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`);
+    toast(`${BI()} 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`);
     return name;
   }
   function updateFriendCount() { $('#friendCount').textContent = friends.length; }
   function renderFriends() {
     const g = $('#friendsGrid');
-    if (!friends.length) { g.innerHTML = `<div class="empty" style="grid-column:1/-1">아직 친구가 없어요.<br>도시락을 꽉 채워서 친구를 깨워봐요!</div>`; return; }
+    if (!friends.length) { g.innerHTML = `<div class="empty" style="grid-column:1/-1">아직 친구가 없어요.<br>${eul(B())} 꽉 채워서 친구를 깨워봐요!</div>`; return; }
     g.innerHTML = friends.slice().reverse().map(f => `
       <div class="mini" style="background:${f.color}">
         <div class="fr">${f.fa}${f.fb}${ACCESSORY[f.lv || 1]}</div>
@@ -1177,12 +1255,12 @@
       $('#resetBtn').addEventListener('click', () => renderReset(true));
       return;
     }
-    r.innerHTML = `<div class="ask">도시락 친구 ${friends.length}명을 모두 지우고 처음부터 모을까요?</div>
+    r.innerHTML = `<div class="ask">친구 ${friends.length}명을 모두 지우고 처음부터 모을까요?</div>
       <div class="btns"><button class="danger" id="resetYes">네, 처음부터</button><button id="resetNo">아니요</button></div>`;
     $('#resetYes').addEventListener('click', () => {
       friends = []; save('fruitbox-friends', friends);
       updateFriendCount(); renderFriends(); renderReset(false);
-      toast('🍱 처음부터 다시 모아 봐요!');
+      toast(`${BI()} 처음부터 다시 모아 봐요!`);
     });
     $('#resetNo').addEventListener('click', () => renderReset(false));
   }
@@ -1190,8 +1268,8 @@
   function renderLevels() {
     $('#levelList').innerHTML = [1, 2, 3, 4, 5].map(n => `
       <button class="levelcard ${n === level ? 'current' : ''}" data-lv="${n}">
-        <span class="lvicon">${LEVELS[n].icon}</span>
-        <span class="lvtext"><span class="lvname">${n}단계 · ${LEVELS[n].name}</span><span class="lvdesc">${LEVELS[n].desc}</span></span>
+        <span class="lvicon">${LEVELS()[n].icon}</span>
+        <span class="lvtext"><span class="lvname">${n}단계 · ${LEVELS()[n].name}</span><span class="lvdesc">${LEVELS()[n].desc}</span></span>
       </button>`).join('');
     $('#levelList').querySelectorAll('.levelcard').forEach(b => b.addEventListener('click', () => {
       level = +b.dataset.lv; save('fruitbox-level', level); streak = 0;
@@ -1199,10 +1277,30 @@
       actx(); newProblem();
     }));
   }
+  function applySkin() {
+    document.body.dataset.skin = skinId;
+    $('#title').innerHTML = `${SKIN.icon} ${SKIN.title}<span class="long">${SKIN.long}</span>`;
+    document.title = SKIN.title + (SKIN.long || '');
+    $('#friendIcon').textContent = SKIN.icon;
+    $('#friendsTitle').textContent = `내 ${SKIN.box} 친구들`;
+  }
+  function renderSkins() {
+    $('#skinList').innerHTML = Object.entries(SKINS).map(([id, sk]) => `
+      <button class="skincard ${id === skinId ? 'current' : ''}" data-skin="${id}">
+        <span class="sk-icons">${sk.items.slice(0, 3).map(f => f.e).join('')}</span>
+        <span class="sk-name">${sk.icon} ${sk.name}</span>
+      </button>`).join('');
+    $('#skinList').querySelectorAll('.skincard').forEach(b => b.addEventListener('click', () => {
+      skinId = b.dataset.skin; SKIN = SKINS[skinId]; save('fruitbox-skin', skinId);
+      applySkin();
+      $('#levelModal').classList.add('hidden');
+      actx(); newProblem();
+    }));
+  }
   $('#levelBtn').addEventListener('click', () => {
     if (TA.running || TA.counting) { toast('도전 중에는 단계를 바꿀 수 없어요!'); return; }
-    if (S.busy) { toast('잠깐만! 과일을 넣는 중이에요'); return; }
-    renderLevels(); $('#levelModal').classList.remove('hidden');
+    if (S.busy) { toast(`잠깐만! ${eul(IT())} 넣는 중이에요`); return; }
+    renderLevels(); renderSkins(); $('#levelModal').classList.remove('hidden');
   });
   $('#closeLevel').addEventListener('click', () => $('#levelModal').classList.add('hidden'));
   $('#levelModal').addEventListener('click', e => { if (e.target.id === 'levelModal') e.target.classList.add('hidden'); });
@@ -1210,6 +1308,7 @@
   $('#friendsModal').addEventListener('click', e => { if (e.target.id === 'friendsModal') e.target.classList.add('hidden'); });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
 
+  applySkin();
   paintSound();
   updateFriendCount();
   newProblem();
