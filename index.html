@@ -19,8 +19,8 @@
     --accent-dark: #d96a1f;
     --ok: #2fb36d;
     --box: #ffd6e0;
-    --slot: clamp(38px, 7.6vw, 66px);
-    --fruit: clamp(26px, 5vw, 44px);
+    --slot: max(34px, min(7.6vw, 6.4vh, 66px));
+    --fruit: max(24px, min(5vw, 4.4vh, 44px));
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
@@ -62,10 +62,10 @@
     gap: clamp(8px, 2.4vw, 22px);
     background: var(--card); border-radius: 24px; padding: 14px 16px 10px;
     box-shadow: 0 4px 0 var(--card-shadow);
-    min-height: calc(clamp(40px, 8vw, 64px) + 96px);
+    min-height: calc(max(40px, min(8vw, 7vh, 64px)) + 90px);
   }
   .term { display: flex; flex-direction: column; align-items: center; position: relative; }
-  .num { font-size: clamp(40px, 8vw, 64px); line-height: 1; }
+  .num { font-size: max(40px, min(8vw, 7vh, 64px)); line-height: 1; }
   .op { font-size: clamp(34px, 7vw, 56px); line-height: 1; color: var(--muted); }
   .num.ans { color: var(--ink); min-width: 1.2em; text-align: center; }
   .num.ans.solved { color: var(--ok); animation: popin .4s; }
@@ -93,8 +93,8 @@
     text-align: center; box-shadow: 0 4px 0 var(--card-shadow);
     border: 4px solid transparent; transition: transform .2s, border-color .2s;
   }
-  .pile-label { font-size: clamp(18px, 3vw, 24px); margin-bottom: 6px; }
-  .pile-count { font-size: clamp(22px, 3.6vw, 30px); margin-top: 6px; }
+  .pile-label { font-size: clamp(18px, 3vw, 24px); margin-bottom: 2px; }
+  .pile-count { font-size: clamp(22px, 3.6vw, 30px); margin-top: 2px; }
   .pile.selectable { cursor: pointer; border-color: #ffd0a8; animation: glow 1.4s ease-in-out infinite; }
   .pile.selectable:active { transform: scale(.97); }
   .pile.chosen { border-color: var(--ok); }
@@ -161,7 +161,7 @@
     background: var(--card); border-radius: 24px; padding: 16px;
     box-shadow: 0 4px 0 var(--card-shadow); text-align: center;
   }
-  #question { font-size: clamp(20px, 3.8vw, 28px); line-height: 1.45; min-height: 2.9em; cursor: pointer; }
+  #question { font-size: max(19px, min(3.8vw, 3.2vh, 28px)); line-height: 1.45; min-height: 2.9em; cursor: pointer; }
   #question .hint { display: block; color: var(--accent-dark); font-size: .85em; margin-top: 4px; }
   #choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; min-height: 10px; }
   .choice {
@@ -178,7 +178,7 @@
     font-size: clamp(24px, 4.4vw, 30px); padding: 12px 34px; box-shadow: 0 6px 0 var(--accent-dark);
   }
   .next:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--accent-dark); }
-  .summary { display: inline-flex; flex-direction: column; gap: 4px; text-align: left; margin-top: 6px; font-size: .9em; }
+  .summary { display: inline-flex; flex-direction: column; gap: 0; text-align: left; margin-top: 0; font-size: .88em; line-height: 1.35; }
   .summary .big { font-size: 1.3em; color: var(--ok); text-align: center; }
 
   .cnt {
@@ -229,6 +229,62 @@
   @keyframes zz { 0%,100% { transform: translateY(0); opacity: .4; } 50% { transform: translateY(-8px); opacity: 1; } }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-18px) scale(1.04); } 70% { transform: translateY(0) scale(.98, 1.02); } }
   @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+
+  /* ---------- 단계별 ---------- */
+  #levelBtn { color: var(--accent-dark); }
+  .slotwrap { position: relative; }
+  .lid {
+    position: absolute; inset: -3px; border-radius: 18px;
+    background-color: #c9906b;
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.22) 0 12px, transparent 12px 24px);
+    background-color: color-mix(in srgb, var(--box) 55%, #a8683f);
+    display: grid; place-items: center; font-size: calc(var(--slot) * .9);
+    box-shadow: 0 4px 0 rgba(0,0,0,.15), inset 0 0 0 3px rgba(255,255,255,.35);
+    transform-origin: top center; transform: translateY(-120%) rotate(-8deg); opacity: 0;
+    transition: transform .45s ease, opacity .45s ease; pointer-events: none;
+  }
+  .box.closed .lid { transform: none; opacity: 1; }
+  .pile.numcard .fruits { display: none; }
+  .pile.numcard.peek .fruits { display: grid; }
+  .pile.numcard .pile-count { font-size: clamp(40px, 7vw, 60px); }
+  .pile.numcard.peek .pile-count { font-size: clamp(22px, 3.6vw, 30px); }
+  #peekRow:not(:empty) { margin-top: 12px; }
+  .peek {
+    border: 0; border-radius: 999px; padding: 8px 20px; font-size: 20px;
+    background: #e6f0ff; color: #2b5cb8; box-shadow: 0 4px 0 #b9cdf0;
+  }
+  .peek:active { transform: translateY(2px); box-shadow: 0 2px 0 #b9cdf0; }
+  .tentag {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px;
+    white-space: nowrap; font-size: clamp(16px, 2.6vw, 20px); color: var(--ok);
+    background: #e7f8ee; border-radius: 999px; padding: 2px 10px; animation: fadein .4s;
+  }
+  .choice.wide { width: clamp(96px, 20vw, 130px); font-size: clamp(34px, 6vw, 46px); }
+  body.lv3 #stage, body.lv4 #stage { display: none; }
+  body.lv3 .num, body.lv4 .num { font-size: clamp(56px, 11vw, 84px); }
+  body.lv3 .op, body.lv4 .op { font-size: clamp(48px, 9vw, 72px); }
+  body.lv3 .eq, body.lv4 .eq { min-height: calc(clamp(56px, 11vw, 84px) + 104px); padding-top: 22px; }
+  body.lv3 #question b, body.lv4 #question b { font-size: 1.2em; }
+  .dots { display: inline-grid; grid-template-columns: repeat(5, 24px); gap: 5px; margin: 8px 6px 2px; vertical-align: top; }
+  .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--dc); position: relative; display: block; }
+  .dot.hole { background: #fff; border: 3px dashed var(--accent); }
+  .dot.used { opacity: .45; }
+  .dot .cnt { top: -10px; right: -10px; font-size: 13px; min-width: 20px; height: 20px; }
+  .dot.hole .cnt { top: -3px; left: -3px; right: auto; width: calc(100% + 6px); height: calc(100% + 6px); min-width: 0; padding: 0; background: none; color: var(--accent); font-size: 14px; }
+  .donewrap { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .mini.solo { width: 120px; animation: popin .5s; }
+  .badgeline { color: var(--accent-dark); text-align: center; }
+  .modal .sheet #levelList { display: flex; flex-direction: column; gap: 10px; }
+  .levelcard {
+    display: flex; align-items: center; gap: 14px; text-align: left; width: 100%;
+    border: 3px solid transparent; border-radius: 20px; background: var(--card);
+    padding: 12px 16px; box-shadow: 0 4px 0 var(--card-shadow);
+  }
+  .levelcard.current { border-color: var(--accent); }
+  .lvicon { font-size: 36px; }
+  .lvtext { display: flex; flex-direction: column; gap: 2px; }
+  .lvname { font-size: 22px; }
+  .lvdesc { font-size: 16px; color: var(--muted); }
 
   @media (max-width: 680px) {
     /* 휴대폰: 한 화면(100dvh)에 스크롤 없이 들어가도록 화면 높이에 맞춰 줄인다 */
@@ -282,14 +338,30 @@
     .choice { width: var(--btn); height: var(--btn); font-size: calc(var(--btn) * .5); border-radius: 14px; box-shadow: 0 4px 0 #f3c48f; }
     .next { font-size: 22px; padding: 10px 28px; }
     .summary { font-size: .95em; gap: 2px; margin-top: 0; }
+    .title .long { display: none; }
+    .lid { border-radius: 14px; }
+    .pile.numcard .pile-count { font-size: 28px; }
+    .pile.numcard.peek .pile-count { font-size: 18px; }
+    .peek { font-size: 17px; padding: 6px 16px; }
+    #peekRow:not(:empty) { margin-top: 8px; }
+    .tentag { font-size: 14px; margin-top: 6px; }
+    .choice.wide { width: calc(var(--btn) * 1.8); }
+    body.lv3, body.lv4 { --num: min(16vw, 8dvh, 72px); }
+    body.lv3 .num, body.lv4 .num { font-size: var(--num); }
+    body.lv3 .op, body.lv4 .op { font-size: calc(var(--num) * .85); }
+    body.lv3 .eq, body.lv4 .eq { min-height: calc(var(--num) + 96px); }
+    body.lv3 main, body.lv4 main { justify-content: center; }
+    .dots { grid-template-columns: repeat(5, 20px); gap: 4px; }
+    .dot { width: 20px; height: 20px; }
     .toast { font-size: 16px; bottom: 14px; }
   }
 </style>
 </head>
 <body>
 <header>
-  <div class="title">🍱 과일 도시락 친구들</div>
+  <div class="title">🍱 과일 도시락<span class="long"> 친구들</span></div>
   <div class="hud">
+    <button id="levelBtn" aria-label="단계 고르기">🍱 1단계</button>
     <button id="friendsBtn" aria-label="도시락 친구 모음">🍱 <span id="friendCount">0</span></button>
     <button id="soundBtn" aria-label="소리 켜기/끄기">🔊</button>
   </div>
@@ -304,7 +376,10 @@
       <div class="box sleeping" id="box">
         <div class="zzz"><span>z</span><span>z</span><span>Z</span></div>
         <div class="badge">10</div>
-        <div class="slots" id="slots"></div>
+        <div class="slotwrap">
+          <div class="slots" id="slots"></div>
+          <div class="lid"><span>🎀</span></div>
+        </div>
         <div class="face">
           <div class="eye l"></div><div class="eye r"></div>
           <div class="cheek l"></div><div class="cheek r"></div>
@@ -318,6 +393,7 @@
   <div id="panel">
     <div id="question" title="누르면 다시 읽어줘요"></div>
     <div id="choices"></div>
+    <div id="peekRow"></div>
   </div>
 </main>
 
@@ -326,6 +402,12 @@
     <div class="sheet-head"><span>내 도시락 친구들</span><button id="closeFriends" aria-label="닫기">✕</button></div>
     <div id="friendsGrid"></div>
     <div class="reset-row" id="resetRow"></div>
+  </div>
+</div>
+<div class="modal hidden" id="levelModal">
+  <div class="sheet">
+    <div class="sheet-head"><span>단계 고르기</span><button id="closeLevel" aria-label="닫기">✕</button></div>
+    <div id="levelList"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -419,12 +501,28 @@
     speak(t);
   }
 
+  // ----- 단계(레벨) -----
+  const LEVELS = [
+    null,
+    { icon: '🍱', name: '열린 도시락', desc: '과일과 빈자리가 다 보여요' },
+    { icon: '🎁', name: '뚜껑 닫힌 도시락', desc: '숫자만 보고 머릿속으로! 막히면 👀 살짝 보기' },
+    { icon: '🔢', name: '숫자 도시락', desc: '그림 없이 가르기로 풀어요' },
+    { icon: '⚡', name: '한 번에!', desc: '식만 보고 바로 답해요' },
+  ];
+  const ACCESSORY = ['', '', '🎀', '⭐', '👑'];
+  let level = load('fruitbox-level', 1);
+  if (![1, 2, 3, 4].includes(level)) level = 1;
+  let streak = 0;
+  const jo = (n, withB, noB) => NUM_BAT[n % 10] ? withB : noB; // 숫자 뒤 조사
+
   // ----- 상태 -----
   let S = {};
+  let problemId = 0;
   const recent = [];
   const fruitOf = k => k === 'a' ? S.fa : S.fb;
   const other = k => k === 'a' ? 'b' : 'a';
   const F = k => `${fruitOf(k).e} ${fruitOf(k).n}`; // "🍎 사과"
+  const pic = () => S.level <= 2; // 그림(도시락) 단계인지
 
   function newProblem() {
     let a, b, key;
@@ -437,22 +535,41 @@
     let fb; do { fb = pickOne(FRUITS); } while (fb === fa);
     let color; do { color = pickOne(BOX_COLORS); } while (color === S.color && BOX_COLORS.length > 1);
 
-    S = { a, b, fa, fb, color, step: 'pick', first: null, need: 0, left: 0,
-          needDone: false, leftDone: false, solved: false, wrong: 0, busy: false };
+    S = { id: ++problemId, a, b, fa, fb, color, level, step: 'pick', first: null, need: 0, left: 0,
+          needDone: false, leftDone: false, solved: false, wrong: 0, wrongTotal: 0,
+          busy: false, peeks: 0, lidOpen: false, guided: false };
 
-    renderPile('a'); renderPile('b');
-    renderBox();
+    document.body.className = 'lv' + level;
+    $('#levelBtn').textContent = `${LEVELS[level].icon} ${level}단계`;
+    chEl.innerHTML = ''; hidePeek(); clearCounts();
     renderEq();
-    chEl.innerHTML = '';
-    piles.a.classList.add('selectable'); piles.b.classList.add('selectable');
-    say(`${F('a')} <b>${a}</b>개, ${F('b')} <b>${b}</b>개가 있어요.<br>어떤 과일을 먼저 도시락에 넣을까요?` +
-        `<span class="hint">👆 과일을 눌러 골라봐!</span>`);
+
+    if (pic()) {
+      renderPile('a'); renderPile('b'); renderBox();
+      piles.a.classList.add('selectable'); piles.b.classList.add('selectable');
+      say(`${F('a')} <b>${a}</b>개, ${F('b')} <b>${b}</b>개가 있어요.<br>어떤 과일을 먼저 도시락에 넣을까요?` +
+          `<span class="hint">👆 과일을 눌러 골라봐!</span>`);
+    } else if (level === 3) {
+      say(`<b>${a} + ${b}</b><br>어느 수를 <b>10</b>으로 만들까요?`);
+      renderPickChoices();
+    } else {
+      chooseFirst(a >= b ? 'a' : 'b');
+      S.step = 'direct';
+      say(`<b>${a} + ${b}</b>${jo(b, '은', '는')} 얼마일까?`);
+      renderChoices(10, 18);
+    }
+  }
+
+  function chooseFirst(k) {
+    S.first = k;
+    S.need = 10 - S[k];
+    S.left = S[other(k)] - S.need;
   }
 
   function renderPile(k) {
     const f = fruitOf(k), n = S[k];
     const el = piles[k];
-    el.className = 'pile';
+    el.className = 'pile' + (S.level === 2 ? ' numcard' : '');
     el.innerHTML =
       `<div class="pile-label">${f.e} ${f.n}</div>` +
       `<div class="fruits">${`<span class="fruit">${f.e}</span>`.repeat(n)}</div>` +
@@ -461,25 +578,29 @@
   function setPileCount(k, text) { piles[k].querySelector('.pile-count').textContent = text; }
 
   function renderBox() {
-    boxEl.className = 'box sleeping';
+    boxEl.className = 'box sleeping' + (S.level === 2 ? ' closed' : '');
     boxEl.style.setProperty('--box', S.color);
     slotsEl.innerHTML = '<div class="slot"></div>'.repeat(10);
   }
 
   function renderEq() {
+    const showBond = S.first && !['pick', 'filling', 'direct'].includes(S.step);
     const small = S.first ? other(S.first) : null;
     const term = k => {
       const f = fruitOf(k);
-      let bond = '';
-      if (k === small) {
-        bond = `<div class="bond">
+      let extra = '';
+      if (showBond && k === small) {
+        extra = `<div class="bond">
           <svg viewBox="0 0 78 26"><line x1="39" y1="3" x2="14" y2="23"/><line x1="39" y1="3" x2="64" y2="23"/></svg>
           <div class="parts">
             <span class="part ${S.needDone ? 'filled tobox' : ''}">${S.needDone ? S.need : '?'}</span>
             <span class="part ${S.leftDone ? 'filled' : ''}">${S.leftDone ? S.left : '?'}</span>
           </div></div>`;
       }
-      return `<div class="term"><div class="num" style="color:${f.c}">${S[k]}</div>${bond}</div>`;
+      if (showBond && k === S.first && S.needDone) {
+        extra = `<div class="tentag">+${S.need} → 10</div>`;
+      }
+      return `<div class="term"><div class="num" style="color:${f.c}">${S[k]}</div>${extra}</div>`;
     };
     eqEl.innerHTML =
       term('a') + '<div class="op">+</div>' + term('b') + '<div class="op">=</div>' +
@@ -494,6 +615,17 @@
       btn.addEventListener('click', () => onAnswer(n, btn));
       chEl.appendChild(btn);
     }
+  }
+  // 3단계: 어느 수를 10으로 만들지 고르는 버튼
+  function renderPickChoices() {
+    chEl.innerHTML = '';
+    ['a', 'b'].forEach(k => {
+      const btn = document.createElement('button');
+      btn.className = 'choice wide'; btn.textContent = S[k]; btn.dataset.k = k;
+      btn.style.color = fruitOf(k).c;
+      btn.addEventListener('click', () => onPick(k, btn));
+      chEl.appendChild(btn);
+    });
   }
 
   // ----- 애니메이션 -----
@@ -530,8 +662,22 @@
     const e = fruitOf(k).e;
     const src = [...piles[k].querySelectorAll('.fruit:not(.gone)')].slice(-n).reverse();
     const dst = [...slotsEl.querySelectorAll('.slot:not(.filled)')].slice(0, n);
-    dst.forEach(d => d.classList.add('reserved'));
     await Promise.all(src.map((s, i) => wait(i * 170).then(() => fly(s, dst[i], e)).then(() => sfx.pop(i))));
+  }
+  // 2단계: 날아가는 모습 없이 칸에 바로 넣기 (뚜껑 아래에서)
+  async function fillInstant(k, n) {
+    const e = fruitOf(k).e;
+    const src = [...piles[k].querySelectorAll('.fruit:not(.gone)')].slice(-n);
+    const dst = [...slotsEl.querySelectorAll('.slot:not(.filled)')].slice(0, n);
+    for (let i = 0; i < n; i++) {
+      src[i].classList.add('gone');
+      dst[i].textContent = e; dst[i].classList.add('filled');
+      sfx.pop(i); await wait(130);
+    }
+  }
+  async function openLid() {
+    S.lidOpen = true; boxEl.classList.remove('closed');
+    await wait(500);
   }
 
   function sparkle(el, count = 18) {
@@ -553,42 +699,90 @@
   }
 
   function countOn(els, start) {
-    els.forEach((el, i) => setTimeout(() => {
+    [...els].forEach((el, i) => setTimeout(() => {
       const c = document.createElement('span');
       c.className = 'cnt'; c.textContent = start + i;
       el.appendChild(c); sfx.tick(i);
     }, i * 420));
   }
   const clearCounts = () => document.querySelectorAll('.cnt').forEach(c => c.remove());
+  const dots = (n, color, cls = '') => Array.from({ length: n }, () => `<span class="dot ${cls}" style="--dc:${color}"></span>`).join('');
 
   function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
 
-  // ----- 단계 -----
-  async function onPick(k) {
+  // ----- 살짝 보기 (2단계) -----
+  function showPeek() {
+    if (S.level !== 2) return;
+    $('#peekRow').innerHTML = `<button class="peek" id="peekBtn">👀 살짝 보기</button>`;
+    $('#peekBtn').addEventListener('click', peek);
+  }
+  function hidePeek() { $('#peekRow').innerHTML = ''; }
+  async function peek() {
+    if (S.busy || S.peeking) return;
+    const id = S.id, o = other(S.first);
+    S.peeking = true; S.peeks++;
+    tone(660, .1, 'sine', .15);
+    if (S.step === 'need') boxEl.classList.remove('closed');
+    else piles[o].classList.add('peek');
+    await wait(2000);
+    if (S.id !== id) return;
+    if (!S.lidOpen) boxEl.classList.add('closed');
+    piles[o].classList.remove('peek');
+    S.peeking = false;
+  }
+
+  // ----- 단계 진행 -----
+  async function onPick(k, btn) {
     if (S.step !== 'pick' || S.busy) return;
     actx();
     const o = other(k);
     if (S[k] < S[o]) {
-      sfx.no(); shake(piles[k]);
-      say(`음~ ${eun(F(k))} ${S[k]}개, ${eun(F(o))} ${S[o]}개야.` +
-          `<span class="hint">더 <b>많은</b> 과일을 먼저 넣으면 빈자리가 조금만 남아서 쉬워! 다시 골라볼까?</span>`);
+      sfx.no(); shake(btn || piles[k]);
+      if (S.level === 3) {
+        say(`음~ ${S[k]}보다 ${S[o]}${jo(S[o], '이', '가')} 더 커.` +
+            `<span class="hint">더 <b>큰</b> 수를 10으로 만들면 조금만 더하면 돼서 쉬워! 다시 골라볼까?</span>`);
+      } else {
+        say(`음~ ${eun(F(k))} ${S[k]}개, ${eun(F(o))} ${S[o]}개야.` +
+            `<span class="hint">더 <b>많은</b> 과일을 먼저 넣으면 빈자리가 조금만 남아서 쉬워! 다시 골라볼까?</span>`);
+      }
       return;
     }
-    S.busy = true; S.first = k; S.step = 'filling';
-    S.need = 10 - S[k]; S.left = S[o] - S.need;
+    chooseFirst(k);
+    if (S.level === 3) { right(btn); S.busy = true; await wait(500); return startNumSteps(); }
+
+    S.busy = true; S.step = 'filling';
     piles.a.classList.remove('selectable'); piles.b.classList.remove('selectable');
     piles[k].classList.add('chosen');
     sfx.ok();
-    say(`좋아! ${F(k)} ${S[k]}개를 도시락에 쏙쏙!`);
-    await wait(500);
-    await fill(k, S[k]);
+    if (S.level === 1) {
+      say(`좋아! ${F(k)} ${S[k]}개를 도시락에 쏙쏙!`);
+      await wait(500);
+      await fill(k, S[k]);
+    } else {
+      say(`좋아! ${F(k)} ${S[k]}개를 도시락에 넣고 뚜껑을 닫았어요.`);
+      await wait(400);
+      await fillInstant(k, S[k]);
+    }
     setPileCount(k, '0개');
     await wait(300);
 
     S.step = 'need'; S.wrong = 0; S.busy = false;
-    boxEl.classList.add('wantfill');
     renderEq();
-    say(`도시락에는 자리가 <b>10개</b>! 꽉 채워야 잠에서 깨어나요.<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
+    if (S.level === 1) {
+      boxEl.classList.add('wantfill');
+      say(`도시락에는 자리가 <b>10개</b>! 꽉 채워야 잠에서 깨어나요.<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
+    } else {
+      say(`도시락에 ${F(k)} <b>${S[k]}개</b>가 들어갔어요. 자리는 <b>10개</b>!<br>${eul(F(o))} 몇 개 더 넣어야 할까?`);
+      showPeek();
+    }
+    renderChoices(1, 9);
+  }
+
+  // 3단계(그리고 4단계에서 두 번 틀렸을 때): 숫자로 차근차근
+  function startNumSteps() {
+    S.step = 'need'; S.wrong = 0; S.busy = false;
+    renderEq();
+    say(`<b>${S[S.first]}</b>에 얼마를 더하면 <b>10</b>이 될까?`);
     renderChoices(1, 9);
   }
 
@@ -596,17 +790,48 @@
     if (S.busy) return;
     const k = S.first, o = k && other(k);
 
+    if (S.step === 'direct') {
+      if (n !== S.a + S.b) {
+        wrongMark(btn);
+        if (S.wrong === 1) {
+          say(`다시 생각해볼까?<span class="hint">작은 수를 갈라서 <b>10</b>을 먼저 만들어 봐!</span>`);
+        } else {
+          S.busy = true; S.guided = true;
+          say(`같이 차근차근 풀어보자!`);
+          await wait(1300);
+          startNumSteps();
+        }
+        return;
+      }
+      right(btn);
+      return finish();
+    }
+
     if (S.step === 'need') {
-      if (n !== S.need) return wrong(btn, () => {
-        if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락의 빈자리를 세어봐! 👀</span>`);
-        else { say(`빈자리를 같이 세어보자!`); countOn([...slotsEl.querySelectorAll('.slot:not(.filled)')], 1); }
-      });
+      if (n !== S.need) { wrongMark(btn); return hintNeed(); }
       S.busy = true; right(btn); clearCounts();
-      boxEl.classList.remove('wantfill');
       S.needDone = true; renderEq();
+
+      if (!pic()) {
+        say(`맞았어! ${S[k]} + ${S.need} = 10`);
+        await wait(1500);
+        S.step = 'left'; S.wrong = 0; S.busy = false;
+        say(`<b>${S[o]}</b>${jo(S[o], '은', '는')} <b>${S.need}</b>${jo(S.need, '과', '와')} 몇으로 가를 수 있을까?`);
+        renderChoices(0, 9);
+        return;
+      }
+
+      boxEl.classList.remove('wantfill');
       say(`맞았어! ${eul(F(o))} ${S.need}개 넣어요.`);
-      await wait(700);
-      await fill(o, S.need);
+      if (S.level === 1) {
+        await wait(700);
+        await fill(o, S.need);
+      } else {
+        hidePeek();
+        await openLid();
+        await wait(400);
+        await fillInstant(o, S.need);
+      }
       setPileCount(o, '?개');
       await wait(250);
       boxEl.classList.remove('sleeping'); boxEl.classList.add('awake');
@@ -617,70 +842,151 @@
       S.step = 'left'; S.wrong = 0; S.busy = false;
       say(`${F(o)} ${S[o]}개 중에서 ${S.need}개를 도시락에 넣었어요.<br>${eun(F(o))} 몇 개 남았을까?`);
       renderChoices(0, 9);
+      showPeek();
       return;
     }
 
     if (S.step === 'left') {
-      if (n !== S.left) return wrong(btn, () => {
-        if (S.wrong === 1) say(`다시 세어볼까?<span class="hint">밖에 남아 있는 ${eul(fruitOf(o).n)} 하나씩 세어봐!</span>`);
-        else { say(`남은 ${fruitOf(o).n}, 같이 세어보자!`); countOn([...piles[o].querySelectorAll('.fruit:not(.gone)')], 1); }
-      });
+      if (n !== S.left) { wrongMark(btn); return hintLeft(); }
       S.busy = true; right(btn); clearCounts();
       S.leftDone = true; renderEq();
-      setPileCount(o, `${S.left}개`);
-      boxEl.classList.add('ten');
-      say(`맞았어! ${S.left}개 남았어요.`);
-      await wait(1500);
+      if (pic()) {
+        setPileCount(o, `${S.left}개`);
+        boxEl.classList.add('ten');
+        say(`맞았어! ${S.left}개 남았어요.`);
+      } else {
+        say(`맞았어! ${S[o]}${jo(S[o], '은', '는')} ${S.need}${jo(S.need, '과', '와')} ${S.left}${roJ(S.left)} 가를 수 있어.`);
+      }
+      await wait(1600);
 
       S.step = 'total'; S.wrong = 0; S.busy = false;
-      say(`꽉 찬 도시락 <b>10개</b>와 남은 ${F(o)} <b>${S.left}개</b>.<br>과일은 모두 몇 개일까?`);
+      if (pic()) say(`꽉 찬 도시락 <b>10개</b>와 남은 ${F(o)} <b>${S.left}개</b>.<br>과일은 모두 몇 개일까?`);
+      else say(`<b>10 + ${S.left}</b>${jo(S.left, '은', '는')} 얼마일까?`);
       renderChoices(10, 18);
       return;
     }
 
     if (S.step === 'total') {
-      const ans = S.a + S.b;
-      if (n !== ans) return wrong(btn, () => {
-        if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락에 10개! 거기서부터 남은 ${fruitOf(o).n}만큼 더 세어봐.</span>`);
-        else { say(`10부터 같이 세어보자! 열…`); countOn([...piles[o].querySelectorAll('.fruit:not(.gone)')], 11); }
-      });
-      S.busy = true; right(btn); clearCounts();
-      S.solved = true; S.step = 'done'; renderEq();
-      sfx.wake(); sparkle(eqEl.querySelector('.ans'), 26);
-      addFriend();
-      const f = fruitOf(k), g = fruitOf(o);
-      qEl.innerHTML = `
-        <div class="summary">
-          <div class="big">🎉 정답! ${S.a} + ${S.b} = ${ans}</div>
-          <div>${g.e} ${numJ(S[o], '을', '를')} <b>${S.need}</b>${numJ(S.need, '과', '와').slice(String(S.need).length)} <b>${S.left}</b>${roJ(S.left)} 나눠요</div>
-          <div>${f.e} ${S[k]} + ${g.e} ${S.need} = 🍱 10</div>
-          <div>🍱 10 + ${g.e} ${S.left} = <b>${ans}</b></div>
-        </div>`;
-      speak(`정답! ${S.a} 더하기 ${S.b}는 ${ans}!`);
-      chEl.innerHTML = '';
-      const nx = document.createElement('button');
-      nx.className = 'next'; nx.textContent = '다음 도시락 ▶';
-      nx.addEventListener('click', () => { actx(); newProblem(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-      chEl.appendChild(nx);
-      S.busy = false;
+      if (n !== S.a + S.b) { wrongMark(btn); return hintTotal(); }
+      right(btn);
+      return finish();
     }
   }
 
-  function wrong(btn, hint) {
-    S.wrong++;
+  // ----- 힌트 -----
+  const kc = () => fruitOf(S.first).c, oc = () => fruitOf(other(S.first)).c;
+  function hintNeed() {
+    const k = S.first;
+    const empties = () => slotsEl.querySelectorAll('.slot:not(.filled)');
+    if (S.level === 1) {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락의 빈자리를 세어봐! 👀</span>`);
+      else { say(`빈자리를 같이 세어보자!`); countOn(empties(), 1); }
+    } else if (S.level === 2) {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[k]}에서 10이 되려면 얼마나 더 필요할까? 막히면 👀 살짝 보기!</span>`);
+      else { say(`뚜껑을 열고 빈자리를 같이 세어보자!`); hidePeek(); S.lidOpen = true; boxEl.classList.remove('closed'); setTimeout(() => countOn(empties(), 1), 450); }
+    } else {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[k]} 다음 수부터 10까지 손가락을 펴면서 세어봐!</span>`);
+      else {
+        say(`점으로 세어보자! 빈 칸이 몇 개일까?<span class="hint"><span class="dots">${dots(S[k], kc())}${dots(S.need, '', 'hole')}</span></span>`);
+        countOn(qEl.querySelectorAll('.dot.hole'), 1);
+      }
+    }
+  }
+  function hintLeft() {
+    const o = other(S.first);
+    const rest = () => piles[o].querySelectorAll('.fruit:not(.gone)');
+    if (S.level === 1) {
+      if (S.wrong === 1) say(`다시 세어볼까?<span class="hint">밖에 남아 있는 ${eul(fruitOf(o).n)} 하나씩 세어봐!</span>`);
+      else { say(`남은 ${fruitOf(o).n}, 같이 세어보자!`); countOn(rest(), 1); }
+    } else if (S.level === 2) {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[o]}개에서 ${S.need}개를 넣었으니… 막히면 👀 살짝 보기!</span>`);
+      else { say(`남은 ${fruitOf(o).n}, 같이 세어보자!`); hidePeek(); piles[o].classList.remove('numcard'); countOn(rest(), 1); }
+    } else {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">${S[o]}에서 ${S.need}만큼 도시락에 넣었으면 몇이 남을까?</span>`);
+      else {
+        say(`점으로 세어보자! 🍱에 들어간 ${S.need}개 말고 남은 점은?<span class="hint"><span class="dots">${dots(S.need, '#2fb36d', 'used')}${dots(S.left, oc(), 'rest')}</span></span>`);
+        countOn(qEl.querySelectorAll('.dot.rest'), 1);
+      }
+    }
+  }
+  function hintTotal() {
+    const o = other(S.first);
+    const rest = () => piles[o].querySelectorAll('.fruit:not(.gone)');
+    if (S.level === 1) {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락에 10개! 거기서부터 남은 ${fruitOf(o).n}만큼 더 세어봐.</span>`);
+      else { say(`10부터 같이 세어보자! 열…`); countOn(rest(), 11); }
+    } else if (S.level === 2) {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">도시락에 10개! 거기서부터 ${S.left}만큼 더 세어봐. 막히면 👀 살짝 보기!</span>`);
+      else { say(`10부터 같이 세어보자! 열…`); hidePeek(); piles[o].classList.remove('numcard'); countOn(rest(), 11); }
+    } else {
+      if (S.wrong === 1) say(`다시 생각해볼까?<span class="hint">10에서부터 ${S.left}만큼 더 세어봐!</span>`);
+      else {
+        say(`10부터 같이 세어보자! 열…<span class="hint"><span class="dots">${dots(10, '#2fb36d')}</span><span class="dots">${dots(S.left, oc(), 'rest')}</span></span>`);
+        countOn(qEl.querySelectorAll('.dot.rest'), 11);
+      }
+    }
+  }
+
+  function finish() {
+    const k = S.first, o = other(k), ans = S.a + S.b;
+    S.busy = true; S.solved = true; S.step = 'done'; S.needDone = S.leftDone = true;
+    clearCounts(); hidePeek(); renderEq();
+    sfx.wake(); sparkle(eqEl.querySelector('.ans'), 26);
+    if (S.level === 4) streak = (S.wrongTotal === 0) ? streak + 1 : 0;
+    const name = addFriend();
+
+    const f = fruitOf(k), g = fruitOf(o);
+    const lines = pic() ? [
+      `${g.e} ${S[o]}${jo(S[o], '을', '를')} <b>${S.need}</b>${jo(S.need, '과', '와')} <b>${S.left}</b>${roJ(S.left)} 나눠요`,
+      `${f.e} ${S[k]} + ${g.e} ${S.need} = 🍱 10`,
+      `🍱 10 + ${g.e} ${S.left} = <b>${ans}</b>`,
+    ] : [
+      `${S[o]}${jo(S[o], '을', '를')} <b>${S.need}</b>${jo(S.need, '과', '와')} <b>${S.left}</b>${roJ(S.left)} 갈라요`,
+      `${S[k]} + ${S.need} = 10`,
+      `10 + ${S.left} = <b>${ans}</b>`,
+    ];
+    let badge = '';
+    if (S.level === 2) badge = S.peeks === 0 && S.wrongTotal === 0 ? '🌟 살짝 보기 없이 성공!' : (S.peeks ? `👀 살짝 보기 ${S.peeks}번` : '');
+    if (S.level === 4) badge = streak >= 2 ? `🔥 ${streak}번 연속 정답!` : (S.wrongTotal === 0 ? '⚡ 한 번에 정답!' : '');
+    const mini = pic() ? '' : `
+      <div class="mini solo" style="background:${S.color}">
+        <div class="fr">${ACCESSORY[S.level]}</div>
+        <div class="face"><div class="eye l"></div><div class="eye r"></div><div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
+        <div class="nm">${name}</div>
+      </div>`;
+    qEl.innerHTML = `
+      <div class="donewrap">
+        ${mini}
+        <div class="summary">
+          <div class="big">🎉 정답! ${S.a} + ${S.b} = ${ans}</div>
+          ${lines.map(l => `<div>${l}</div>`).join('')}
+          ${badge ? `<div class="badgeline">${badge}</div>` : ''}
+        </div>
+      </div>`;
+    speak(`정답! ${S.a} 더하기 ${S.b}${jo(S.b, '은', '는')} ${ans}!`);
+    chEl.innerHTML = '';
+    const nx = document.createElement('button');
+    nx.className = 'next'; nx.textContent = '다음 도시락 ▶';
+    nx.addEventListener('click', () => { actx(); newProblem(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    chEl.appendChild(nx);
+    S.busy = false;
+  }
+
+  function wrongMark(btn) {
+    S.wrong++; S.wrongTotal++;
     sfx.no(); shake(btn); btn.classList.add('wrong');
     clearCounts();
-    hint();
   }
-  function right(btn) { btn.classList.add('right'); sfx.ok(); }
+  function right(btn) { if (btn) btn.classList.add('right'); sfx.ok(); }
 
   // ----- 친구 모음 -----
   function addFriend() {
     const name = pickOne(NAMES);
-    friends.push({ name, color: S.color, fa: S.fa.e, fb: S.fb.e, a: S.a, b: S.b, t: Date.now() });
+    friends.push({ name, color: S.color, fa: S.fa.e, fb: S.fb.e, a: S.a, b: S.b, lv: S.level, t: Date.now() });
     save('fruitbox-friends', friends);
     updateFriendCount();
     toast(`🍱 새 친구 '${name}'${hasBatchim(name) ? '이' : '가'} 생겼어요!`);
+    return name;
   }
   function updateFriendCount() { $('#friendCount').textContent = friends.length; }
   function renderFriends() {
@@ -688,7 +994,7 @@
     if (!friends.length) { g.innerHTML = `<div class="empty" style="grid-column:1/-1">아직 친구가 없어요.<br>도시락을 꽉 채워서 친구를 깨워봐요!</div>`; return; }
     g.innerHTML = friends.slice().reverse().map(f => `
       <div class="mini" style="background:${f.color}">
-        <div class="fr">${f.fa}${f.fb}</div>
+        <div class="fr">${f.fa}${f.fb}${ACCESSORY[f.lv || 1]}</div>
         <div class="face"><div class="eye l"></div><div class="eye r"></div><div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
         <div class="nm">${f.name}</div>
         <div class="q">${f.a} + ${f.b} = ${f.a + f.b}</div>
@@ -701,8 +1007,8 @@
   }
 
   // ----- 연결 -----
-  piles.a.addEventListener('click', () => onPick('a'));
-  piles.b.addEventListener('click', () => onPick('b'));
+  piles.a.addEventListener('click', () => onPick('a', piles.a));
+  piles.b.addEventListener('click', () => onPick('b', piles.b));
   qEl.addEventListener('click', () => { actx(); speak(lastSpeech); });
   const soundBtn = $('#soundBtn');
   const paintSound = () => soundBtn.textContent = soundOn ? '🔊' : '🔇';
@@ -729,6 +1035,25 @@
     });
     $('#resetNo').addEventListener('click', () => renderReset(false));
   }
+  // 단계 고르기
+  function renderLevels() {
+    $('#levelList').innerHTML = [1, 2, 3, 4].map(n => `
+      <button class="levelcard ${n === level ? 'current' : ''}" data-lv="${n}">
+        <span class="lvicon">${LEVELS[n].icon}</span>
+        <span class="lvtext"><span class="lvname">${n}단계 · ${LEVELS[n].name}</span><span class="lvdesc">${LEVELS[n].desc}</span></span>
+      </button>`).join('');
+    $('#levelList').querySelectorAll('.levelcard').forEach(b => b.addEventListener('click', () => {
+      level = +b.dataset.lv; save('fruitbox-level', level); streak = 0;
+      $('#levelModal').classList.add('hidden');
+      actx(); newProblem();
+    }));
+  }
+  $('#levelBtn').addEventListener('click', () => {
+    if (S.busy) { toast('잠깐만! 과일을 넣는 중이에요'); return; }
+    renderLevels(); $('#levelModal').classList.remove('hidden');
+  });
+  $('#closeLevel').addEventListener('click', () => $('#levelModal').classList.add('hidden'));
+  $('#levelModal').addEventListener('click', e => { if (e.target.id === 'levelModal') e.target.classList.add('hidden'); });
   $('#closeFriends').addEventListener('click', () => $('#friendsModal').classList.add('hidden'));
   $('#friendsModal').addEventListener('click', e => { if (e.target.id === 'friendsModal') e.target.classList.add('hidden'); });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
