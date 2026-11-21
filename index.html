@@ -204,6 +204,14 @@
   .mini .fr { font-size: 22px; }
   .mini .nm { font-size: 18px; }
   .mini .q { font-size: 15px; color: rgba(59,47,47,.7); }
+  .reset-row { margin-top: 18px; text-align: center; }
+  .reset-row button {
+    border: 0; border-radius: 999px; padding: 10px 20px; font-size: 18px;
+    background: var(--card); color: var(--muted); box-shadow: 0 3px 0 var(--card-shadow);
+  }
+  .reset-row .danger { background: #ffe1e1; color: #c0392b; box-shadow: 0 3px 0 #f3b9b9; }
+  .reset-row .ask { font-size: 19px; margin-bottom: 10px; }
+  .reset-row .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .empty { text-align: center; color: var(--muted); font-size: 20px; padding: 30px 0; }
 
   .toast {
@@ -317,6 +325,7 @@
   <div class="sheet">
     <div class="sheet-head"><span>내 도시락 친구들</span><button id="closeFriends" aria-label="닫기">✕</button></div>
     <div id="friendsGrid"></div>
+    <div class="reset-row" id="resetRow"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -701,7 +710,25 @@
     soundOn = !soundOn; save('fruitbox-sound', soundOn); paintSound();
     if (!soundOn && 'speechSynthesis' in window) speechSynthesis.cancel(); else { actx(); sfx.ok(); }
   });
-  $('#friendsBtn').addEventListener('click', () => { renderFriends(); $('#friendsModal').classList.remove('hidden'); });
+  $('#friendsBtn').addEventListener('click', () => { renderFriends(); renderReset(false); $('#friendsModal').classList.remove('hidden'); });
+  // 처음부터 다시 모으기: 실수로 누르지 않게 한 번 더 묻는다
+  function renderReset(confirming) {
+    const r = $('#resetRow');
+    if (!friends.length) { r.innerHTML = ''; return; }
+    if (!confirming) {
+      r.innerHTML = `<button id="resetBtn">🔄 처음부터 다시 모으기</button>`;
+      $('#resetBtn').addEventListener('click', () => renderReset(true));
+      return;
+    }
+    r.innerHTML = `<div class="ask">도시락 친구 ${friends.length}명을 모두 지우고 처음부터 모을까요?</div>
+      <div class="btns"><button class="danger" id="resetYes">네, 처음부터</button><button id="resetNo">아니요</button></div>`;
+    $('#resetYes').addEventListener('click', () => {
+      friends = []; save('fruitbox-friends', friends);
+      updateFriendCount(); renderFriends(); renderReset(false);
+      toast('🍱 처음부터 다시 모아 봐요!');
+    });
+    $('#resetNo').addEventListener('click', () => renderReset(false));
+  }
   $('#closeFriends').addEventListener('click', () => $('#friendsModal').classList.add('hidden'));
   $('#friendsModal').addEventListener('click', e => { if (e.target.id === 'friendsModal') e.target.classList.add('hidden'); });
   if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
